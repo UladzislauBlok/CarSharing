@@ -1,6 +1,5 @@
 package org.carsharing.companyObjects;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -9,11 +8,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class CompanyDAOImpl implements CompanyDAO{
-    Connection connection;
-    Statement statement;
+    private final Statement statement;
 
-    public CompanyDAOImpl(Connection connection, Statement statement) {
-        this.connection = connection;
+    public CompanyDAOImpl(Statement statement) {
         this.statement = statement;
     }
 
@@ -33,7 +30,7 @@ public class CompanyDAOImpl implements CompanyDAO{
     }
 
     @Override
-    public void printAllCompany() throws SQLException {
+    public List<Company> getCompanyList() throws SQLException {
         String sql = "SELECT * FROM COMPANY " +
                 "ORDER BY id;";
         ResultSet resultSet = statement.executeQuery(sql);
@@ -45,15 +42,6 @@ public class CompanyDAOImpl implements CompanyDAO{
             Company company = new Company(id, name);
             list.add(company);
         }
-
-        if (list.isEmpty()) {
-            System.out.println("The company list is empty!\n");
-        } else {
-            System.out.println("Company list:");
-            for (int count = 0; count < list.size(); count++) {
-                System.out.println(count+1 + ". " + list.get(count).getName());
-            }
-            System.out.print('\n');
-        }
+        return list;
     }
 }
