@@ -1,5 +1,7 @@
-package org.carsharing.users;
+package org.carsharing.user;
 
+import org.carsharing.companyObjects.Company;
+import org.carsharing.userOperation.CarOperation;
 import org.carsharing.userOperation.CompanyOperation;
 
 import java.sql.SQLException;
@@ -10,7 +12,8 @@ public class Manager {
     public static void doOperation(Statement statement) throws SQLException {
         Scanner scanner = new Scanner(System.in);
         CompanyOperation companyOperation = new CompanyOperation(statement);
-        OUT: while (true) {
+        OUT:
+        while (true) {
             System.out.print("1. Company list\n" +
                     "2. Create a company\n" +
                     "0. Back\n" +
@@ -20,21 +23,25 @@ public class Manager {
             System.out.print('\n');
 
             switch (choice) {
-                case 1 : {
-                    boolean isEmpty = companyOperation.printAllCompany();
-                    if (!isEmpty) {
-                        companyOperation.chooseCompany(statement);
+                case 1: {
+                    boolean isPresent = companyOperation.printCompanyList();
+                    if (isPresent) {
+                        Company company = companyOperation.selectCompany();
+                        if (company != null) {
+                            CarOperation carOperation = new CarOperation(statement);
+                            carOperation.operationWithCompany(company);
+                        }
                     }
                     break;
                 }
-                case 2 : {
+                case 2: {
                     companyOperation.addCompany();
                     break;
                 }
-                case 0 : {
+                case 0: {
                     break OUT;
                 }
-                default :{
+                default: {
                     System.out.println("Unknown operation\n");
                     break;
                 }

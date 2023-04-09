@@ -10,47 +10,51 @@ import java.util.List;
 import java.util.Scanner;
 
 public class CompanyOperation {
-
     private final CompanyDAO companyDAO;
-    private final Scanner scanner;
 
     public CompanyOperation(Statement statement) {
-        this.companyDAO = new CompanyDAOImpl(statement);
-        this.scanner = new Scanner(System.in);
+        companyDAO = new CompanyDAOImpl(statement);
     }
 
-    public boolean printAllCompany() throws SQLException {
+    public boolean printCompanyList() throws SQLException {
         List<Company> companyList = companyDAO.getCompanyList();
-        if (companyList.isEmpty()) {
-            System.out.println("The company list is empty!\n");
-            return true;
-        } else {
-            System.out.println("Company list:");
+
+        if (!companyList.isEmpty()) {
+            System.out.println("Choose a company:");
             for (int count = 0; count < companyList.size(); count++) {
                 System.out.println(count+1 + ". " + companyList.get(count).getName());
             }
             System.out.print("0. Back\n" +
                     "> ");
+            return true;
+        } else {
+            System.out.println("The company list is empty!\n");
             return false;
         }
     }
 
-    public void chooseCompany(Statement statement) throws SQLException {
-        int choice = scanner.nextInt();
-        System.out.print('\n');
-
+    public Company selectCompany() throws SQLException {
+        Scanner scanner = new Scanner(System.in);
         List<Company> companyList = companyDAO.getCompanyList();
-
+        int choice = scanner.nextInt();
         if (choice > 0 && choice <= companyList.size()) {
-            Company company = companyList.get(choice - 1);
-            CarOperation carOperation = new CarOperation(statement, company);
-            carOperation.doOperation();
+            return companyList.get(choice-1);
         } else if (choice != 0) {
             System.out.println("Wrong company number");
+            return null;
         }
+        return null;
+    }
+
+    public Company getCompanyById(int id) throws SQLException {
+        return companyDAO.getCompanyById(id);
     }
 
     public void addCompany() throws SQLException {
-        companyDAO.addCompany();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the company name:");
+        String companyName = scanner.nextLine();
+        companyDAO.createCompany(companyName);
+        System.out.println("The company was created!\n");
     }
 }
